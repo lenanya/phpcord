@@ -1,0 +1,17 @@
+#!/bin/php
+<?php
+
+$token = argv[1];
+
+$channel = argv[2];
+
+$json = array();
+
+exec('curl -H "Authorization: '.$token.'" https://discord.com/api/v10/channels/'.$channel.'/messages', $json);
+
+$json_str = implode($json);
+
+$messages = array_reverse(json_decode($json_str));
+
+print_r($messages);
+
