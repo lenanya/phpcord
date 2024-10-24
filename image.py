@@ -8,7 +8,7 @@ class AsciiConverter:
     ASCII_TABLE: str = " .,:;I!i><~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"[::1] 
     pixel_grid: list[list[int]] 
     
-    def convert_image_to_ascii(self, image_path: str, image_width) -> str:
+    def convert_image_to_ascii(self, image_path: str, image_width, block) -> str:
         original_image = Image.open(image_path)
         resized_image = original_image.resize((image_width, floor(image_width / 3)))
         resized_image_g = resized_image.convert("L")
@@ -25,7 +25,10 @@ class AsciiConverter:
         for row in self.pixel_grid:
             current: str = ""
             for pixel in row:
-                current += f"\033[48;2;0;0;0m\033[38;2;{pixel[1][0]};{pixel[1][1]};{pixel[1][2]}m" + self.ASCII_TABLE[pixel[0]] + "\033[0m"
+                if not block:
+                    current += f"\033[48;2;0;0;0m\033[38;2;{pixel[1][0]};{pixel[1][1]};{pixel[1][2]}m" + self.ASCII_TABLE[pixel[0]] + "\033[0m"
+                else:
+                    current += f"\033[48;2;0;0;0m\033[38;2;{pixel[1][0]};{pixel[1][1]};{pixel[1][2]}m\u2588\033[0m"
             result += current + "\n"
 
         return result[:-1]
@@ -38,6 +41,10 @@ if __name__ == "__main__":
     
     url = argv[1]
     image_width = int(argv[2])
+    if len(argv) > 3:
+        block = True
+    else:
+        block = False
 
     extension = url.split('/')[-1].split('.')[-1]
     
@@ -45,7 +52,7 @@ if __name__ == "__main__":
     with open(f'temp.{extension}', 'wb') as img:
         img.write(image_data)
        
-    text = AsciiConverter().convert_image_to_ascii(f'temp.{extension}', image_width)
+    text = AsciiConverter().convert_image_to_ascii(f'temp.{extension}', image_width, block)
 
     os.remove(f"temp.{extension}")
 

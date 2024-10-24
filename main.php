@@ -30,7 +30,7 @@ while (true) {
     }
 
     if (isset($pressed)) {
-        if ($pressed == "\n") {
+        if ($pressed == "\n" || $pressed == "\r") {
             send_message($typed_msg, $token, $channel);
             $typed_msg = '';
         } else if ($pressed == "\177") {
@@ -66,7 +66,7 @@ while (true) {
             foreach (array_values($msg->attachments) as $att) {
                 if (str_starts_with($att->content_type, 'image/')) {
                     unset($images);
-                    exec('python image.py "'.$att->url.'" "'.floor($columns * 0.5).'"', $images);
+                    exec('python image.py "'.$att->url.'" "'.floor($columns * 0.5).'" "y"', $images);
                     foreach (array_values($images) as $line) {
                         echo $line."\n";
                     }
